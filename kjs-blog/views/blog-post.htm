@@ -1,0 +1,34 @@
+<script type="text/x-jquery-tmpl" id="blogPostView">
+    <div class="blog-post">
+        
+        <div class="title-bar clearfix">
+            <div class="title">
+                {{if editing}}
+                    <input data-bind="value: title" />
+                {{else}}
+                    <h3 data-bind="text: title" />
+                    <p>
+                        <span class="posted-date">Posted: ${creationDateFmt}</span>
+                        {{if modifiedDate}}
+                            <span class="modified-date">(last updated: ${modifiedDateFmt})</span>
+                        {{/if}}
+                    </p>
+                {{/if}}
+            </div>
+            
+            <div class="actions">
+                <button data-bind="button: {}, click: startEditing, visible: canEdit">edit</button>
+                <button data-bind="button: {}, click: previewChanges, visible: editing">preview changes</button>
+                <button data-bind="button: {}, click: deletePost">delete</button>
+                <button data-bind="button: {}, click: publishChanges, visible: changed">publish changes</button>
+            </div>
+        </div>
+        
+        {{if editing}}
+            <textarea data-bind="value: content" />
+        {{else}}
+            <div data-bind="html: content" />
+        {{/if}}
+        
+    </div>
+</script>

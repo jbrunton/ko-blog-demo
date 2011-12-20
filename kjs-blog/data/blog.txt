@@ -1,0 +1,21 @@
+{
+    "title": "My Blog",
+    "author": "jbrunton",
+    "posts": [
+        {
+            "title": "My Post",
+            "content": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>",
+            "creationDate": "17 Dec, 2011"
+        },
+        {
+            "title": "Another Post",
+            "content": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>",
+            "creationDate": "18 Dec, 2011"
+        },
+        {
+            "title": "And Another",
+            "content": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>",
+            "creationDate": "19 Dec, 2011"
+        }
+    ]
+}

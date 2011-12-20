@@ -1,0 +1,52 @@
+<head>
+    <title>VTB</title>
+    
+    <meta http-equiv="cache-control" content="no-cache" />
+	
+    <script type='text/javascript' src='javascript/jquery-1.7.1.js'></script>
+    <script type='text/javascript' src='javascript/jquery-ui-1.8.16.custom.min.js'></script>
+    <script type='text/javascript' src='javascript/jquery.tmpl.js'></script>
+    <script type='text/javascript' src='javascript/jquery.subscribe.js'></script>
+    <script type='text/javascript' src='javascript/knockout-2.0.0rc.debug.js'></script>
+    <script type='text/javascript' src='javascript/underscore.js'></script>
+    <script type='text/javascript' src='javascript/vtb.js'></script>
+    
+    <script type='text/javascript' src='viewmodels/blog.js'></script>
+    
+    <link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.8.16.custom.css" type="text/css" />
+    <link rel="stylesheet" href="css/site.css" type="text/css" />
+    
+    <script type="text/javascript">
+        
+        $(document).ready(function() {
+          
+            $("body").append(util.loadView('views/blog.htm'));
+            $("body").append(util.loadView('views/blog-post.htm'));
+            
+            var data = util.loadFeed('data/blog.txt');
+            
+            var viewModel = new BlogViewModel(data.title, data.author);
+            
+            $.each(data.posts, function (index, post) {
+                if (post.creationDate) {
+                    post.creationDate = util.parseDate(post.creationDate);
+                }
+                var postViewModel = new BlogPostViewModel(post);
+                viewModel.posts.push(postViewModel);
+            });
+          
+            ko.applyBindings(viewModel);
+        });
+        
+    </script>
+</head>
+<body>
+    <div id="tmpl" class="container" data-bind="template: 'blogView'"></div>
+    
+    <div id="del-post-dlg" title="Delete post?" class="hide">
+        <p>
+            <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+            Are you sure you want to delete this post?  (You can always recover it later.)
+        </p>
+    </div>
+</body>
