@@ -1,13 +1,11 @@
 class ApiController < ApplicationController
 
     def getModel(name)
-        _, @model = {
+        {
             "users" => User,
             "blogs" => Blog,
             "blog-posts" => BlogPost
-        }.find {|x,_| x == name}
-        
-        @model
+        }[name]
     end
     
     def feed
@@ -19,6 +17,9 @@ class ApiController < ApplicationController
             @response = @model.where("blog_id = ?", params[:blog_id])
         elsif params[:user_id]
             @response = @model.where("user_id = ?", params[:user_id])
+        elsif params[:search_text]
+            pattern = "%#{params[:search_text]}%"
+            @response = @model.search(pattern)
         else
             @response = @model.all
         end
