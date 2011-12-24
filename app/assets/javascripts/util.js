@@ -1,6 +1,6 @@
 var util = {
     ko : {
-        initialize: function(target, options) {
+        define: function(target, options) {
             var _createProperty = function(propName) {
                 var val = options.properties[propName];
                 target[propName] = val
@@ -43,25 +43,27 @@ var util = {
             return "/api/json/" + action + "/" + entity + (id ? "/" + id : "");
         },
         blogPost : {
+            entityName : "blog-posts",
             actionUrl : function(action, id) {
-                return util.crud.actionUrl(action, "blog-posts", id);
+                return util.crud.actionUrl(action, util.crud.blogPost.entityName, id);
             }
         },
         blog : {
+            entityName: "blogs",
             actionUrl : function(action, id) {
-                return util.crud.actionUrl(action, "blogs", id);
+                return util.crud.actionUrl(action, util.crud.blog.entityName, id);
             }
         },
         
-        behavior : function(entity) {            
+        behavior : function(options) {            
             this.actionUrl = function(action) {
-                return util.crud.actionUrl(action, entity, this.id());
+                return util.crud.actionUrl(action, options.entityName, this.id());
             };
             
             this.doCreateReq = function(success, error) {
                 $.ajax({
                     type: 'POST',
-                    url: util.crud.actionUrl("create", "blog-posts"),
+                    url: util.crud.actionUrl("create", util.crud.blogPost.entityName),
                     data: this.serialize(),
                     success: success,
                     error: error,
@@ -157,6 +159,58 @@ var util = {
             if (m == "}}") { return "}"; }
             return args[n];
         });
+    },
+    
+    dialog : {
+        okCancel : function(options) {
+            var selector = options.selector
+                ? options.selector
+                : "#ok-cancel-dlg";
+                
+            var dlg = $(selector);
+                    
+            if (options.title) {
+                dlg.attr("title", options.title);
+            }
+            
+            if (options.message) {
+                dlg.find("#message").text(options.message);
+            }
+
+            dlg.dialog({
+                resizable: false,
+                modal: true,
+                buttons: {
+                    OK: function() {
+                        if (options.ok) {
+                            options.ok();
+                        }
+                        $(this).dialog("close");
+                    },
+                    Cancel: function() {
+                        if (options.cancel) {
+                            options.cancel();
+                        }
+                        $(this).dialog("close");
+                    }
+                }
+            });            
+        }
+    },
+    
+    effects : {
+
+        afterAdd: function(element) {
+            $(element).hide().fadeIn();
+        },
+        
+        beforeRemove: function(element) {
+            $(element).find(".actions").hide();
+            $(element).children().fadeOut('fast', function() {
+                $(element).slideUp('fast');
+            });
+        }
+
     }
 
 };
