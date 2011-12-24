@@ -87,7 +87,7 @@ body
   margin-bottom:10px;
 }
 
-.blog .title,.blog-post .title
+.header .title, .blog .title, .blog-post .title
 {
   float:left;
 }

@@ -12,7 +12,8 @@
     <script type='text/javascript' src='assets/underscore.js'></script>
     <script type='text/javascript' src='assets/util.js'></script>
     <script type='text/javascript' src='assets/vtb.js'></script>
-    <script type='text/javascript' src='assets/blog.js'></script>
+    <script type='text/javascript' src='assets/viewmodels/blog-post.js'></script>
+    <script type='text/javascript' src='assets/viewmodels/blog.js'></script>
 
     <link rel="stylesheet" href="assets/ui-lightness/jquery-ui-1.8.16.custom.css" type="text/css" />
     <link rel="stylesheet" href="assets/site.css" type="text/css" />
@@ -23,6 +24,7 @@
   
     <script type="text/javascript">
         $(document).ready(function() {
+            $("body").append(util.loadView('/views/header.htm'));
             $("body").append(util.loadView('/views/blog.htm'));
             $("body").append(util.loadView('/views/blog-post.htm'));
                 
@@ -31,9 +33,6 @@
             var viewModel = new BlogViewModel(data);
             
             $.each(data.posts, function (index, post) {
-                if (post.creationDate) {
-                    post.creationDate = util.parseDate(post.creationDate);
-                }
                 var postViewModel = new BlogPostViewModel(post);
                 viewModel.posts.push(postViewModel);
             });
@@ -46,13 +45,9 @@
 
 <%= yield %>
 
-    <div id="tmpl" class="container" data-bind="template: 'blogView'"></div>
-    
-    <div id="del-post-dlg" title="Delete post?" class="hide">
-        <p>
-            <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-            Are you sure you want to delete this post?  (You can always recover it later.)
-        </p>
+    <div class="container">
+        <div data-bind="template: 'header'" class="clearfix"></div>
+        <div data-bind="template: 'blogView'"></div>
     </div>
     
     <div id="ok-cancel-dlg" class="hide">
@@ -62,17 +57,5 @@
         </p>
     </div>
     
-    <div id="create-post-dlg" title="New post" class="hide">
-        <p class="validateTips">All form fields are required.</p>
-    
-        <form>
-        <fieldset>
-            <label for="title">Title</label>
-            <input type="text" name="title" id="title" class="text ui-widget-content ui-corner-all" />
-        </fieldset>
-        </form>
-    </div>
-
-
 </body>
 </html>

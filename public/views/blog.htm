@@ -11,6 +11,12 @@
             </div>
         </div>
         
-        <div data-bind="template: { name:'blogPostView', foreach: posts, afterAdd: afterAdd, beforeRemove: beforeRemove }"></div>
+        <div data-bind="template: {
+            name:'blogPostView',
+            foreach: posts,
+            afterAdd: util.effects.afterAdd,
+            beforeRemove: util.effects.beforeRemove }">
+        </div>
+        
     </div>
 </script>
