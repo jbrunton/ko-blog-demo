@@ -167,7 +167,13 @@ var util = {
                 ? options.selector
                 : "#ok-cancel-dlg";
                 
-            var dlg = $(selector);
+            var dlg = $(selector).clone();
+            
+            if (options.warning) {
+                dlg.find("#warning").show();
+            } else {
+                dlg.find("#warning").hide();
+            }
                     
             if (options.title) {
                 dlg.attr("title", options.title);
@@ -176,6 +182,20 @@ var util = {
             if (options.message) {
                 dlg.find("#message").text(options.message);
             }
+            
+            if (options.form) {
+                var form = $('<form></form>');
+                
+                var _createField = function(field) {
+                    form.append('<label>' + field.label + ':</label>');
+                    form.append("<div><input type='text' name='" + field.name + "' /></div>");
+                };
+                
+                _(options.form.fields).chain().each(_createField);
+            }
+            
+            dlg.append(form);
+            
 
             dlg.dialog({
                 resizable: false,
@@ -183,7 +203,21 @@ var util = {
                 buttons: {
                     OK: function() {
                         if (options.ok) {
-                            options.ok();
+                            if (options.form) {
+                                var formValues = {};
+                                
+                                var _addValue = function(field) {
+                                    var val = dlg.find('input[name=' + field.name + ']').val();
+                                    formValues[field.name] = val;
+                                };
+                                
+                                _(options.form.fields).chain().each(_addValue);
+                            }
+                            if (formValues) {
+                                options.ok(formValues);
+                            } else {
+                                options.ok();
+                            }
                         }
                         $(this).dialog("close");
                     },
@@ -199,18 +233,96 @@ var util = {
     },
     
     effects : {
-
         afterAdd: function(element) {
             $(element).hide().fadeIn();
-        },
-        
+        },        
         beforeRemove: function(element) {
             $(element).find(".actions").hide();
             $(element).children().fadeOut('fast', function() {
                 $(element).slideUp('fast');
             });
         }
+    },
+    
+    auth : {
+        prompt: function() {
+            util.dialog.okCancel({
+                title: "Sign-in",
+                message: "Please enter your username and password",
+                form: {
+                    fields: [
+                        { label: "username", name: "user_name" },
+                        { label: "password", name: "password" }
+                    ]
+                },
+                ok: function(formValues) {
+                    var success = function() {
+                        // alert("success");
+                    };
+                    var error = function() {
+                        // alert("error");
+                    };
+                    var options = {
+                        user_name: formValues["user_name"],
+                        password: formValues["password"],
+                        success: success,
+                        error: error
+                    };
+                    util.auth.doAuthReq(options);
+                }
+            });
+        },
+        
+        user: function() {
+            var authCookie = $.cookie('auth_token');
+            if (authCookie) {
+                return JSON.parse(authCookie).user_name;
+            }
+        },
+        
+        token: function() {
+            var authCookie = $.cookie('auth_token');
+            if (authCookie) {
+                return JSON.parse(authCookie).token;
+            }
+        },
+        
+        signout: function() {
+            $.cookie('auth_token', null);
+            $.publish('authorized');
+        },
+        
+        doAuthReq: function(options) {
+            $.ajax({
+                type: 'POST',
+                url: "/auth/token.json",
+                data: { user_name: options.user_name },
+                success: function(data) {
+                    if (data.user.id) {
+                        var authCookie = {
+                            user_name: data.user.user_name,
+                            token: data.token
+                        };
 
+                        $.cookie('auth_token',
+                            JSON.stringify(authCookie),
+                            { expires: 7, path: '/' }
+                        );
+                                                
+                        if (options.success) {
+                            options.success(data.user);
+                            $.publish('authorized', [data.user]);
+                        }
+                    }
+                },
+                error: function() {
+                    if (options.error) {
+                        options.error();
+                    }
+                },
+                dataType: 'json'
+            });
+        }
     }
 
 };

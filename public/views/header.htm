@@ -1,12 +1,16 @@
-<script type="text/x-jquery-tmpl" id="header">
+<script type="text/x-jquery-tmpl" id="headerView">
     <div class="header">
         <div class="clearfix">
             <div class="title">
-                <h2>blogr</h2>
+                <h1>blogr</h1>
             </div>
         
             <div class="actions">
-                <a href="#">login</a>
+                {{if authorized}}
+                    welcome, ${userName}! (<a href="#" onclick="javascript:util.auth.signout()">sign out</a>)
+                {{else}}
+                    <a href="#" onclick="javascript:util.auth.prompt()">sign in</a>
+                {{/if}}
             </div>
         </div>
     </div>

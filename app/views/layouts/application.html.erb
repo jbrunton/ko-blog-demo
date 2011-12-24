@@ -8,10 +8,13 @@
     <script type='text/javascript' src='assets/jquery-ui-1.8.16.custom.min.js'></script>
     <script type='text/javascript' src='assets/jquery.tmpl.js'></script>
     <script type='text/javascript' src='assets/jquery.subscribe.js'></script>
+    <script type='text/javascript' src='assets/jquery.cookie.js'></script>
+    <script type='text/javascript' src='assets/json2.js'></script>
     <script type='text/javascript' src='assets/knockout-2.0.0rc.debug.js'></script>
     <script type='text/javascript' src='assets/underscore.js'></script>
     <script type='text/javascript' src='assets/util.js'></script>
     <script type='text/javascript' src='assets/vtb.js'></script>
+    <script type='text/javascript' src='assets/viewmodels/header.js'></script>
     <script type='text/javascript' src='assets/viewmodels/blog-post.js'></script>
     <script type='text/javascript' src='assets/viewmodels/blog.js'></script>
 
@@ -36,8 +39,11 @@
                 var postViewModel = new BlogPostViewModel(post);
                 viewModel.posts.push(postViewModel);
             });
+            
+            var headerViewModel = new HeaderViewModel();
               
-            ko.applyBindings(viewModel);
+            ko.applyBindings(viewModel, $('#blog')[0]);
+            ko.applyBindings(headerViewModel, $('#header')[0]);
         });
     </script>
 </head>
@@ -46,15 +52,32 @@
 <%= yield %>
 
     <div class="container">
-        <div data-bind="template: 'header'" class="clearfix"></div>
-        <div data-bind="template: 'blogView'"></div>
+        <div id="header" data-bind="template: 'headerView'" class="clearfix"></div>
+        <div id="blog" data-bind="template: 'blogView'"></div>
     </div>
     
     <div id="ok-cancel-dlg" class="hide">
         <p>
-            <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+            <span id="warning" class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
             <span id="message" />
         </p>
+    </div>
+    
+    <div id="auth-dlg" class="hide">
+        <p>
+            Please enter your username and password.
+        </p>
+        <form>
+            <label>username:</label>
+            <div>
+                <input type="text" id="user_name" name="user_name" />
+            </div>
+            
+            <label>password:</label>
+            <div>
+                <input type="text" id="password" name="password" />
+            </div>
+        </form>
     </div>
     
 </body>
