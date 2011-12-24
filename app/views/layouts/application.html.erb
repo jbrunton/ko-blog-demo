@@ -3,12 +3,75 @@
 <head>
   <title>VtbServer</title>
   <%= stylesheet_link_tag    "application" %>
-  <%= javascript_include_tag "application" %>
+
+    <script type='text/javascript' src='assets/jquery-1.7.1.js'></script>
+    <script type='text/javascript' src='assets/jquery-ui-1.8.16.custom.min.js'></script>
+    <script type='text/javascript' src='assets/jquery.tmpl.js'></script>
+    <script type='text/javascript' src='assets/jquery.subscribe.js'></script>
+    <script type='text/javascript' src='assets/knockout-2.0.0rc.debug.js'></script>
+    <script type='text/javascript' src='assets/underscore.js'></script>
+    <script type='text/javascript' src='assets/vtb.js'></script>
+    <script type='text/javascript' src='assets/blog.js'></script>
+
+    <link rel="stylesheet" href="assets/ui-lightness/jquery-ui-1.8.16.custom.css" type="text/css" />
+    <link rel="stylesheet" href="assets/site.css" type="text/css" />
+    
+  <!-- javascript_include_tag "jquery-1.7.1", "jquery-ui-1.8.16.custom.min", "jquery.tmpl", "jquery.subscribe", "knockout-2.0.0rc.debug", "underscore", "vtb", "blog", "application" -->
+
   <%= csrf_meta_tags %>
+  
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("body").append(util.loadView('/views/blog.htm'));
+            $("body").append(util.loadView('/views/blog-post.htm'));
+                
+            var data = util.loadFeed('/api/json/feed/blogs/1');
+            
+            var viewModel = new BlogViewModel(data);
+            
+            $.each(data.posts, function (index, post) {
+                if (post.creationDate) {
+                    post.creationDate = util.parseDate(post.creationDate);
+                }
+                var postViewModel = new BlogPostViewModel(post);
+                viewModel.posts.push(postViewModel);
+            });
+              
+            ko.applyBindings(viewModel);
+        });
+    </script>
 </head>
 <body>
 
 <%= yield %>
+
+    <div id="tmpl" class="container" data-bind="template: 'blogView'"></div>
+    
+    <div id="del-post-dlg" title="Delete post?" class="hide">
+        <p>
+            <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+            Are you sure you want to delete this post?  (You can always recover it later.)
+        </p>
+    </div>
+    
+    <div id="ok-cancel-dlg" class="hide">
+        <p>
+            <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+            <span id="message" />
+        </p>
+    </div>
+    
+    <div id="create-post-dlg" title="New post" class="hide">
+        <p class="validateTips">All form fields are required.</p>
+    
+        <form>
+        <fieldset>
+            <label for="title">Title</label>
+            <input type="text" name="title" id="title" class="text ui-widget-content ui-corner-all" />
+        </fieldset>
+        </form>
+    </div>
+
 
 </body>
 </html>

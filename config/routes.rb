@@ -4,7 +4,10 @@ VtbServer::Application.routes.draw do
 
   # Sample of regular route:
   #   match 'api/:format/:action/(:id)' => 'api'
-    match 'api/:format/:feed/(:id)' => 'api#feed'
+    match 'api/:format/feed/:model/(:id)' => 'api#feed'
+    match 'api/:format/create/:model' => 'api#create'
+    match 'api/:format/update/:model/:id' => 'api#update'
+    match 'api/:format/delete/:model/:id' => 'api#delete'
   # Keep in mind you can assign values other than :controller and :action
 
   # Sample of named route:
@@ -49,7 +52,7 @@ VtbServer::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  # root :to => 'api#index'
+  root :to => 'home#index'
 
   # See how all your routes lay out with "rake routes"
 

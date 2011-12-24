@@ -1,0 +1,16 @@
+<script type="text/x-jquery-tmpl" id="blogView">
+    <div class="blog">
+        <div class="clearfix">
+            <div class="title">
+                <h1>${title}</h1>
+                <p>By ${author}</p>
+            </div>
+        
+            <div class="actions">
+                <button data-bind="button: {}, click: newPost">new post</button>
+            </div>
+        </div>
+        
+        <div data-bind="template: { name:'blogPostView', foreach: posts, afterAdd: afterAdd, beforeRemove: beforeRemove }"></div>
+    </div>
+</script>
