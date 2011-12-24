@@ -1,51 +1,5 @@
 Util = {
-    initialize: function(target, options) {
-        var _createProperty = function(propName) {
-            var val = options.properties[propName];
-            target[propName] = val
-                ? ko.observable(val)
-                : ko.observable();
-        };
-        
-        var _createArrayProperty = function(propName) {
-            var val = options.arrayProperties[propName];
-            target[propName] = val
-                ? ko.observableArray(val)
-                : ko.observableArray([]);
-        };
-        
-        var _createDependentProperty = function(propName) {
-            var fn = options.dependentProperties[propName];
-            target[propName] = ko.dependentObservable(fn, target);
-        };
-        
-        for (var propName in options.properties) {
-            _createProperty(propName);
-        }
-        
-        for (var propName in options.arrayProperties) {
-            _createArrayProperty(propName);
-        }
-        
-        for (var propName in options.dependentProperties) {
-            _createDependentProperty(propName);
-        }
-    },
-    CRUD : {
-        actionUrl : function(action, entity, id) {
-            return "/api/json/" + action + "/" + entity + (id ? "/" + id : "");
-        },
-        blogPost : {
-            actionUrl : function(action, id) {
-                return Util.CRUD.actionUrl(action, "blog-posts", id);
-            }
-        },
-        blog : {
-            actionUrl : function(action, id) {
-                return Util.CRUD.actionUrl(action, "blogs", id);
-            }
-        }
-    },
+    
     dialog : {
         okCancel : function(options) {
             var selector = options.selector
@@ -85,7 +39,7 @@ Util = {
 };
 
 var BlogPostViewModel = function(model) {
-    Util.initialize(this, {
+    util.ko.initialize(this, {
         properties: {
             id: null,
             blogId: null,
@@ -120,15 +74,15 @@ var BlogPostViewModel = function(model) {
     }
 };
 
+util.extend(BlogPostViewModel, util.crud.behavior, "blog-posts");
+
 BlogPostViewModel.prototype.configureSubscriptions = function() {
     var self = this;
     
     $.subscribe("editing", function(post) {
-        if (post) {
-            self.canEdit(false);
-        } else {
-            self.canEdit(true);
-        }
+        self.canEdit(post
+            ? false
+            : true);
     });
 };
 
@@ -146,43 +100,6 @@ BlogPostViewModel.prototype.previewChanges = function() {
 BlogPostViewModel.prototype.deletePost = function() {
     $.publish("deletePost", [this]);
 };
-
-BlogPostViewModel.prototype.actionUrl = function(action) {
-    return Util.CRUD.blogPost.actionUrl(action, this.id());
-}
-
-BlogPostViewModel.prototype.doCreateReq = function(blogId, success, error) {
-    $.ajax({
-        type: 'POST',
-        url: Util.CRUD.blogPost.actionUrl("create"),
-        data: this.serialize(),
-        success: success,
-        error: error,
-        dataType: 'json'
-    });
-}
-
-BlogPostViewModel.prototype.doUpdateReq = function(success, error) {
-    $.ajax({
-        type: 'POST',
-        url: this.actionUrl("update"),
-        data: { data: this.serialize() },
-        success: success,
-        error: error,
-        dataType: 'json'
-    });
-}
-
-BlogPostViewModel.prototype.doDeleteReq = function(success, error) {
-    $.ajax({
-        type: 'POST',
-        url: this.actionUrl("delete"),
-        data: { id: this.id() },
-        success: success,
-        error: error,
-        dataType: 'json'
-    });
-}
     
 BlogPostViewModel.prototype.publishChanges = function() {
     this.editing(false);
@@ -202,7 +119,7 @@ BlogPostViewModel.prototype.publishChanges = function() {
     if (this.id()) {
         this.doUpdateReq(success, error);
     } else {
-        this.doCreateReq(this.blogId(), success, error);
+        this.doCreateReq(success, error);
     }
         
     this.changed(false);
@@ -236,7 +153,7 @@ BlogPostViewModel.prototype.loadFromData = function(data) {
 var BlogViewModel = function(data) {
     var self = this;
     
-    Util.initialize(this, {
+    util.ko.initialize(this, {
         properties: {
             id: null,
             title: null,
@@ -262,7 +179,8 @@ BlogViewModel.prototype.newPost = function() {
         title: "New Post",
         content: ""
     });
-    post.editing(true);
+    // todo: if another post is editing, doesn't preview other
+    post.startEditing();
     this.posts.unshift(post);
 };
 
@@ -305,6 +223,7 @@ BlogViewModel.prototype.afterAdd = function(element) {
 }
 
 BlogViewModel.prototype.beforeRemove = function(element) {
+    $(element).find(".actions").hide();
     $(element).children().fadeOut('fast', function() {
         $(element).slideUp('fast');
     });
