@@ -421,6 +421,28 @@ var util = {
                 history.pushState(util.nav.history, url, url);
                 route.action(params);
             }
+        },
+        
+        view: function(tmplId, viewModel) {
+            var currentItems = $('.slider .slider-item');
+
+            $('.slider-tray').append($(
+                "<div class='slider-item'><div data-bind='template: \""
+                + tmplId
+                + "\"'></div></div>"
+            ));
+            
+            var newItem = $('.slider .slider-item').last();            
+            ko.applyBindings(viewModel, newItem[0]); 
+            
+            if (currentItems.length) {
+                currentItems.animate({ left: '-=800px', opacity: 0 }, 800, function() {
+                    currentItems.remove();
+                });
+                newItem.css('opacity', '0').animate({ left: '-=800px', opacity: 1.0 }, 800, function() {
+                    newItem.css('left', '0');
+                });
+            }
         }
     }
 

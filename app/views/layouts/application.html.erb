@@ -4,22 +4,22 @@
   <title>VtbServer</title>
   <%= stylesheet_link_tag    "application" %>
 
-    <script type='text/javascript' src='assets/jquery-1.7.1.js'></script>
-    <script type='text/javascript' src='assets/jquery-ui-1.8.16.custom.min.js'></script>
-    <script type='text/javascript' src='assets/jquery.tmpl.js'></script>
-    <script type='text/javascript' src='assets/jquery.subscribe.js'></script>
-    <script type='text/javascript' src='assets/jquery.cookie.js'></script>
-    <script type='text/javascript' src='assets/json2.js'></script>
-    <script type='text/javascript' src='assets/knockout-2.0.0rc.debug.js'></script>
-    <script type='text/javascript' src='assets/underscore.js'></script>
-    <script type='text/javascript' src='assets/underscore.string.js'></script>
-    <script type='text/javascript' src='assets/util.js'></script>
-    <script type='text/javascript' src='assets/vtb.js'></script>
-    <script type='text/javascript' src='assets/viewmodels/container.js'></script>
-    <script type='text/javascript' src='assets/viewmodels/header.js'></script>
-    <script type='text/javascript' src='assets/viewmodels/blog-post.js'></script>
-    <script type='text/javascript' src='assets/viewmodels/blog.js'></script>
-    <script type='text/javascript' src='assets/viewmodels/blog-list.js'></script>
+    <script type='text/javascript' src='/assets/jquery-1.7.1.js'></script>
+    <script type='text/javascript' src='/assets/jquery-ui-1.8.16.custom.min.js'></script>
+    <script type='text/javascript' src='/assets/jquery.tmpl.js'></script>
+    <script type='text/javascript' src='/assets/jquery.subscribe.js'></script>
+    <script type='text/javascript' src='/assets/jquery.cookie.js'></script>
+    <script type='text/javascript' src='/assets/json2.js'></script>
+    <script type='text/javascript' src='/assets/knockout-2.0.0rc.debug.js'></script>
+    <script type='text/javascript' src='/assets/underscore.js'></script>
+    <script type='text/javascript' src='/assets/underscore.string.js'></script>
+    <script type='text/javascript' src='/assets/util.js'></script>
+    <script type='text/javascript' src='/assets/vtb.js'></script>
+    <script type='text/javascript' src='/assets/viewmodels/container.js'></script>
+    <script type='text/javascript' src='/assets/viewmodels/header.js'></script>
+    <script type='text/javascript' src='/assets/viewmodels/blog-post.js'></script>
+    <script type='text/javascript' src='/assets/viewmodels/blog.js'></script>
+    <script type='text/javascript' src='/assets/viewmodels/blog-list.js'></script>
 
     <link rel="stylesheet" href="assets/ui-lightness/jquery-ui-1.8.16.custom.css" type="text/css" />
     
@@ -29,68 +29,20 @@
   
     <script type="text/javascript">
     
-        /*var _slider = {
-            items: [],
-            contains: function(viewId) {
-                return _(this.items).any(function(x) { return x.viewId === viewId; });
-            },
-            find: function(viewId) {
-            },
-            push: function(viewId, tmplId, viewModel) {
-                if (this.contains(viewId)) {
-                } else {
-                    this.items.push({
-                        viewId: viewId,
-                        selector: '#' + viewId
-                    });
-                }
-            }
-        };*/
-        
-        function showBlog(id) {
-            var blogData = util.loadFeed('/api/json/feed/blogs/' + id);
-            var blogViewModel = new BlogViewModel(blogData);
-            showView('blogView', blogViewModel);
-        }
-        
-        function showBlogList() {
-            var blogListData = util.loadFeed('/api/json/feed/blogs');
-            var blogListViewModel = new BlogListViewModel(blogListData);
-            showView('blogListView', blogListViewModel);
-        }
-    
-        function showView(tmplId, viewModel) {
-            var currentItems = $('.slider .slider-item');
-
-            $('.slider-tray').append($(
-                "<div class='slider-item'><div data-bind='template: \""
-                + tmplId
-                + "\"'></div></div>"
-            ));
-            
-            var newItem = $('.slider .slider-item').last();            
-            ko.applyBindings(viewModel, newItem[0]); 
-            
-            if (currentItems.length) {
-                currentItems.animate({ left: '-=800px', opacity: 0 }, 800, function() {
-                    currentItems.remove();
-                });
-                newItem.css('opacity', '0').animate({ left: '-=800px', opacity: 1.0 }, 800, function() {
-                    newItem.css('left', '0');
-                });
-            }
-        }
-        
         function configureControllers() {
             util.nav.actions.home = {
                 index: function(params) {
-                    showBlogList();
+                    var blogListData = util.loadFeed('/api/json/feed/blogs');
+                    var blogListViewModel = new BlogListViewModel(blogListData);
+                    util.nav.view('blogListView', blogListViewModel);
                 }
             };
             
             util.nav.actions.blog = {
                 index: function(params) {
-                    showBlog(params.id);
+                    var blogData = util.loadFeed('/api/json/feed/blogs/' + params.id);
+                    var blogViewModel = new BlogViewModel(blogData);
+                    util.nav.view('blogView', blogViewModel);
                 }
             };            
         }
