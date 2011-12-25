@@ -44,9 +44,9 @@ BlogPostViewModel.prototype.configureSubscriptions = function() {
     var self = this;
     
     $.subscribe("editing", function(post) {
-        self.canEdit(post
-            ? false
-            : true);
+        if (self.editing() && post && post != self) {
+            self.editing(false);
+        }
     });
 };
 

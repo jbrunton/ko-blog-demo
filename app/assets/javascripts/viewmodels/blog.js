@@ -1,14 +1,4 @@
-Util = {
-    
-    
-};
-
-
-
-
 var BlogViewModel = function(data) {
-    var self = this;
-    
     util.ko.define(this, {
         properties: {
             id: null,
@@ -22,9 +12,15 @@ var BlogViewModel = function(data) {
         }
     });
     
+    this.configureSubscriptions();
+    
     if (data) {    
         this.loadFromData(data);
     }
+};
+
+BlogViewModel.prototype.configureSubscriptions = function() {
+    var self = this;
         
     $.subscribe("authorized", function(user) {
         self.checkIfAuthorized();
@@ -32,14 +28,11 @@ var BlogViewModel = function(data) {
 };
 
 BlogViewModel.prototype.newPost = function() {
-    var post = new BlogPostViewModel({
-        blog_id: this.id(),
-        title: "New Post",
-        content: ""
-    });
+    var newPostData = { blog_id: this.id(), title: "New Post", content: "" };
+    var newPost = new BlogPostViewModel(newPostData);
     // todo: if another post is editing, doesn't preview other
-    post.startEditing();
-    this.posts.unshift(post);
+    newPost.startEditing();
+    this.posts.unshift(newPost);
 };
 
 BlogViewModel.prototype.deletePost = function(post) {
