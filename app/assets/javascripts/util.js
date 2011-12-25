@@ -323,6 +323,82 @@ var util = {
                 dataType: 'json'
             });
         }
+    },
+    
+    nav: {
+        _routes: [],
+        
+        actions: {},
+        
+        map: function(url, action) {
+            var _compilePart = function(part) {
+                if (part[0] === ":") {
+                    var routePart = {
+                        regex: /.*/,
+                        id: part.slice(1, part.length)
+                    };
+                } else {
+                    var routePart = {
+                        regex: part
+                    };
+                }
+                return routePart;
+            };
+            
+            var _routeParts = function() {
+                return _(url.split("/"))
+                    .chain()
+                    .map(_compilePart)
+                    .value();
+            };
+            
+            var _compileAction = function(obj, actions) {
+                if (actions.length === 0) {
+                    return obj;
+                } else {
+                    return _compileAction(obj[actions[0]], actions.slice(1, actions.length));
+                }
+            }
+            
+            var route = {
+                routeParts: _routeParts(),
+                action: _compileAction(util.nav.actions, action.split("."))
+            };
+
+            this._routes.push(route);
+        },
+        
+        to: function(url) {
+            var urlParts = url.split("/");
+            
+            var params = {};
+                
+            var _matchRoute = function(route) {
+                var xs = _.zip(route.routeParts, urlParts);
+
+                var _matchRoutePart = function(x) {
+                    if (x[1].match(x[0].regex)) {
+                        if (x[0].id) {
+                            params[x[0].id] = x[1];
+                        }
+                        return true;
+                    }
+                };
+                
+                return _(xs).chain()
+                    .map(_matchRoutePart)
+                    .all(_.identity);
+            };
+            
+            var route = _(this._routes)
+                .chain()
+                .find(_matchRoute)
+                .value();
+            
+            if (route) {
+                route.action(params);
+            }
+        }
     }
 
 };

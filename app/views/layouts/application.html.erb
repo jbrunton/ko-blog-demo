@@ -71,16 +71,30 @@
             ko.applyBindings(viewModel, newItem[0]); 
             
             if (currentItems.length) {
-                currentItems.animate({ left: '-=800px'}, 500, function() {
+                currentItems.animate({ left: '-=800px', opacity: 0 }, 800, function() {
                     currentItems.remove();
                 });
-                newItem.animate({ left: '-=800px'}, 500, function() {
+                newItem.css('opacity', '0').animate({ left: '-=800px', opacity: 1.0 }, 800, function() {
                     newItem.css('left', '0');
                 });
             }
         }
     
         $(document).ready(function() {
+            util.nav.actions.blog = {
+                index: function(params) {
+                    alert("blog.index - id: " + params.id);
+                }
+            };
+            util.nav.map("/blog/:id", "blog.index");
+            //util.nav.map("foo");
+            
+            //alert(JSON.stringify(util.nav._routes));
+            
+            var route = util.nav.to("/blog/1")
+            //var route = util.nav.to("foo");
+            //alert("route: " + route);
+        
             $("body").append(util.loadView('/views/header.htm'));
             $("body").append(util.loadView('/views/blog.htm'));
             $("body").append(util.loadView('/views/blog-post.htm'));
