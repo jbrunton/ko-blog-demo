@@ -72,4 +72,11 @@ BlogViewModel.prototype.loadFromData = function(data) {
     this.id(data.id);
     this.title(data.title);
     this.author(data.author);
+    
+    var self = this;
+    
+    $.each(data.posts, function (index, post) {
+        var postViewModel = new BlogPostViewModel(post);
+        self.posts.push(postViewModel);
+    });
 };

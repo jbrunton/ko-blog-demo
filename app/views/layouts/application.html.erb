@@ -14,36 +14,81 @@
     <script type='text/javascript' src='assets/underscore.js'></script>
     <script type='text/javascript' src='assets/util.js'></script>
     <script type='text/javascript' src='assets/vtb.js'></script>
+    <script type='text/javascript' src='assets/viewmodels/container.js'></script>
     <script type='text/javascript' src='assets/viewmodels/header.js'></script>
     <script type='text/javascript' src='assets/viewmodels/blog-post.js'></script>
     <script type='text/javascript' src='assets/viewmodels/blog.js'></script>
+    <script type='text/javascript' src='assets/viewmodels/blog-list.js'></script>
 
     <link rel="stylesheet" href="assets/ui-lightness/jquery-ui-1.8.16.custom.css" type="text/css" />
-    <link rel="stylesheet" href="assets/site.css" type="text/css" />
     
   <!-- javascript_include_tag "jquery-1.7.1", "jquery-ui-1.8.16.custom.min", "jquery.tmpl", "jquery.subscribe", "knockout-2.0.0rc.debug", "underscore", "vtb", "blog", "application" -->
 
   <%= csrf_meta_tags %>
   
     <script type="text/javascript">
+    
+        /*var _slider = {
+            items: [],
+            contains: function(viewId) {
+                return _(this.items).any(function(x) { return x.viewId === viewId; });
+            },
+            find: function(viewId) {
+            },
+            push: function(viewId, tmplId, viewModel) {
+                if (this.contains(viewId)) {
+                } else {
+                    this.items.push({
+                        viewId: viewId,
+                        selector: '#' + viewId
+                    });
+                }
+            }
+        };*/
+        
+        function showBlog(id) {
+            var blogData = util.loadFeed('/api/json/feed/blogs/' + id);
+            var blogViewModel = new BlogViewModel(blogData);
+            showView('blogView', blogViewModel);
+        }
+        
+        function showBlogList() {
+            var blogListData = util.loadFeed('/api/json/feed/blogs');
+            var blogListViewModel = new BlogListViewModel(blogListData);
+            showView('blogListView', blogListViewModel);
+        }
+    
+        function showView(tmplId, viewModel) {
+            var currentItems = $('.slider .slider-item');
+
+            $('.slider-tray').append($(
+                "<div class='slider-item'><div data-bind='template: \""
+                + tmplId
+                + "\"'></div></div>"
+            ));
+            
+            var newItem = $('.slider .slider-item').last();            
+            ko.applyBindings(viewModel, newItem[0]); 
+            
+            if (currentItems.length) {
+                currentItems.animate({ left: '-=800px'}, 500, function() {
+                    currentItems.remove();
+                });
+                newItem.animate({ left: '-=800px'}, 500, function() {
+                    newItem.css('left', '0');
+                });
+            }
+        }
+    
         $(document).ready(function() {
             $("body").append(util.loadView('/views/header.htm'));
             $("body").append(util.loadView('/views/blog.htm'));
             $("body").append(util.loadView('/views/blog-post.htm'));
-                
-            var data = util.loadFeed('/api/json/feed/blogs/1');
+
+            ko.applyBindings(new HeaderViewModel(), $('#header')[0]);
             
-            var viewModel = new BlogViewModel(data);
+            showBlogList();
             
-            $.each(data.posts, function (index, post) {
-                var postViewModel = new BlogPostViewModel(post);
-                viewModel.posts.push(postViewModel);
-            });
-            
-            var headerViewModel = new HeaderViewModel();
-              
-            ko.applyBindings(viewModel, $('#blog')[0]);
-            ko.applyBindings(headerViewModel, $('#header')[0]);
         });
     </script>
 </head>
@@ -53,7 +98,13 @@
 
     <div class="container">
         <div id="header" data-bind="template: 'headerView'" class="clearfix"></div>
-        <div id="blog" data-bind="template: 'blogView'"></div>
+        <div class="slider">
+            <div class="slider-tray">
+            </div>
+        </div>
+        <div id="footer">
+            <p>Copyright blogr (c) 2011</p>
+        </div>
     </div>
     
     <div id="ok-cancel-dlg" class="hide">
@@ -63,22 +114,33 @@
         </p>
     </div>
     
-    <div id="auth-dlg" class="hide">
-        <p>
-            Please enter your username and password.
-        </p>
-        <form>
-            <label>username:</label>
-            <div>
-                <input type="text" id="user_name" name="user_name" />
-            </div>
-            
-            <label>password:</label>
-            <div>
-                <input type="text" id="password" name="password" />
-            </div>
-        </form>
-    </div>
+    <script type="text/x-jquery-tmpl" id="containerView">
+        <p>Container View</p>
+        <div data-bind="template: {
+            name: 'containerItemView',
+            foreach: items }">
+        </div>
+    </script>
+    
+    <script type="text/x-jquery-tmpl" id="containerItemView">
+        <p>Container Item View</p>
+    </script>
+    
+    <script type="text/x-jquery-tmpl" id="blogListItemView">
+        <div class="blog">
+            <h3>${title}</h3>
+            <span>by ${author}</span>
+            <p><a href="#" onclick="javascript:showBlog(${id})">View</a></p>
+        </div>
+    </script>
+
+    <script type="text/x-jquery-tmpl" id="blogListView">
+        <div data-bind="template: {
+            name:'blogListItemView',
+            foreach: blogs }">
+        </div>
+    </script>
+
     
 </body>
 </html>

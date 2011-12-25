@@ -22,6 +22,17 @@ class ApiController < ApplicationController
             response = model.search(pattern)
         else
             response = model.all
+            
+            if (params[:model] == "blogs")
+                logger.info "generating feed for blogs"
+                
+                response = response.collect {|b| {
+                    :id => b.id,
+                    :title => b.title,
+                    :author => b.user.user_name
+                }}
+            end
+            
         end
         
         respond_to do |format|
