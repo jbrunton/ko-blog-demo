@@ -21,7 +21,7 @@
                     <p>Updating...</p>
                 </div>
             {{else}}
-                <div class="actions">
+                <div class="actions" data-bind="visible: $parent.authorized">
                     <button data-bind="button: {}, click: startEditing, visible: canEdit">edit</button>
                     <button data-bind="button: {}, click: previewChanges, visible: editing">preview changes</button>
                     <button data-bind="button: {}, click: deletePost, visible: id">delete</button>

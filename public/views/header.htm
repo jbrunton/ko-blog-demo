@@ -10,9 +10,9 @@
             <div class="actions">
                 <p>
                 {{if authorized}}
-                    welcome, ${userName}! (<a href="#" onclick="javascript:util.auth.signout()">sign out</a>)
+                    welcome, ${userName}! (<a class="nav-none" href="#" onclick="javascript:util.auth.signout()">sign out</a>)
                 {{else}}
-                    <a href="#" onclick="javascript:util.auth.prompt()">sign in</a>
+                    <a class="nav-none" href="#" onclick="javascript:util.auth.prompt()">sign in</a>
                 {{/if}}
                 </p>
             </div>

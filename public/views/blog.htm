@@ -6,7 +6,7 @@
                 <p>By ${author}</p>
             </div>
         
-            <div class="actions">
+            <div class="actions" data-bind="visible: authorized">
                 <button data-bind="button: {}, click: newPost">new post</button>
             </div>
         </div>

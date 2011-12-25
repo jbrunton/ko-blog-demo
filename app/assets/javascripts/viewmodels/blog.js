@@ -13,7 +13,9 @@ var BlogViewModel = function(data) {
         properties: {
             id: null,
             title: null,
-            author: null
+            author: null,
+            
+            authorized: false
         },
         arrayProperties: {
             posts: []
@@ -26,6 +28,10 @@ var BlogViewModel = function(data) {
         
     $.subscribe("deletePost", function(post) {
         self.deletePost(post);
+    });
+    
+    $.subscribe("authorized", function(user) {
+        self.checkIfAuthorized();
     });
 };
 
@@ -68,10 +74,17 @@ BlogViewModel.prototype.deletePost = function(post) {
     });
 };
 
+BlogViewModel.prototype.checkIfAuthorized = function() {
+    this.authorized(util.auth.user()
+        && this.author() === util.auth.user());
+};
+
 BlogViewModel.prototype.loadFromData = function(data) {
     this.id(data.id);
     this.title(data.title);
     this.author(data.author);
+    
+    this.checkIfAuthorized();
     
     var self = this;
     

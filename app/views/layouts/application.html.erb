@@ -58,6 +58,10 @@
             configureControllers();
             configureRoutes();
             
+            $(document).on("click", "a.nav-none", function(event) {
+                event.preventDefault();
+            });
+            
             $(document).on("click", "a.nav-to", function(event) {
                 var href = $(event.currentTarget).attr("href");
                 util.nav.to(href);
