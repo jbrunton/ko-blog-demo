@@ -330,42 +330,53 @@ var util = {
         
         actions: {},
         
-        map: function(url, action) {
-            var _compilePart = function(part) {
-                if (part[0] === ":") {
-                    var routePart = {
-                        regex: /.*/,
-                        id: part.slice(1, part.length)
-                    };
-                } else {
-                    var routePart = {
-                        regex: part
-                    };
+        map: function(routes) {
+            var _addRoute = function(map) {
+                // alert("_addRoute - map: " + map);
+                var matches = map.replace(/\s/, "").match(/(.*)->(.*)/);
+                
+                var url = matches[1].trim(),
+                    action = matches[2].trim();
+                    
+                // alert("url: " + url + ", action: " + action);
+                    
+                var _compilePart = function(part) {
+                    if (part[0] === ":") {
+                        var routePart = {
+                            regex: /.*/,
+                            id: part.slice(1, part.length)
+                        };
+                    } else {
+                        var routePart = {
+                            regex: part
+                        };
+                    }
+                    return routePart;
+                };
+                
+                var _routeParts = function() {
+                    return _(url.split("/"))
+                        .chain()
+                        .map(_compilePart)
+                        .value();
+                };
+                
+                var _compileAction = function(obj, actions) {
+                    if (actions.length === 0) {
+                        return obj;
+                    } else {
+                        return _compileAction(obj[actions[0]], actions.slice(1, actions.length));
+                    }
                 }
-                return routePart;
-            };
-            
-            var _routeParts = function() {
-                return _(url.split("/"))
-                    .chain()
-                    .map(_compilePart)
-                    .value();
-            };
-            
-            var _compileAction = function(obj, actions) {
-                if (actions.length === 0) {
-                    return obj;
-                } else {
-                    return _compileAction(obj[actions[0]], actions.slice(1, actions.length));
-                }
-            }
-            
-            var route = {
-                routeParts: _routeParts(),
-                action: _compileAction(util.nav.actions, action.split("."))
-            };
+                
+                var route = {
+                    routeParts: _routeParts(),
+                    action: _compileAction(util.nav.actions, action.split("."))
+                };
 
-            this._routes.push(route);
+                util.nav._routes.push(route);
+            };
+            _(routes).chain().each(_addRoute);
         },
         
         to: function(url) {
@@ -383,11 +394,16 @@ var util = {
                         }
                         return true;
                     }
+                    
+                    return false;
                 };
                 
-                return _(xs).chain()
+                var match = _(xs).chain()
                     .map(_matchRoutePart)
-                    .all(_.identity);
+                    .all(_.identity)
+                    .value();
+                
+                return match;
             };
             
             var route = _(this._routes)

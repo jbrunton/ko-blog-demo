@@ -12,6 +12,7 @@
     <script type='text/javascript' src='assets/json2.js'></script>
     <script type='text/javascript' src='assets/knockout-2.0.0rc.debug.js'></script>
     <script type='text/javascript' src='assets/underscore.js'></script>
+    <script type='text/javascript' src='assets/underscore.string.js'></script>
     <script type='text/javascript' src='assets/util.js'></script>
     <script type='text/javascript' src='assets/vtb.js'></script>
     <script type='text/javascript' src='assets/viewmodels/container.js'></script>
@@ -79,30 +80,39 @@
                 });
             }
         }
-    
-        $(document).ready(function() {
-            util.nav.actions.blog = {
+        
+        function configureControllers() {
+            util.nav.actions.home = {
                 index: function(params) {
-                    alert("blog.index - id: " + params.id);
+                    showBlogList();
                 }
             };
-            util.nav.map("/blog/:id", "blog.index");
-            //util.nav.map("foo");
             
-            //alert(JSON.stringify(util.nav._routes));
-            
-            var route = util.nav.to("/blog/1")
-            //var route = util.nav.to("foo");
-            //alert("route: " + route);
+            util.nav.actions.blog = {
+                index: function(params) {
+                    showBlog(params.id);
+                }
+            };            
+        }
+        
+        function configureRoutes() {
+            util.nav.map([
+                "/blog/:id   -> blog.index",
+                "/home/index -> home.index"
+            ]);
+        }
+    
+        $(document).ready(function() {
+            configureControllers();
+            configureRoutes();
         
             $("body").append(util.loadView('/views/header.htm'));
+            ko.applyBindings(new HeaderViewModel(), $('#header')[0]);
+            
             $("body").append(util.loadView('/views/blog.htm'));
             $("body").append(util.loadView('/views/blog-post.htm'));
 
-            ko.applyBindings(new HeaderViewModel(), $('#header')[0]);
-            
-            showBlogList();
-            
+            util.nav.to("/home/index");            
         });
     </script>
 </head>
@@ -144,7 +154,7 @@
         <div class="blog">
             <h3>${title}</h3>
             <span>by ${author}</span>
-            <p><a href="#" onclick="javascript:showBlog(${id})">View</a></p>
+            <p><a href="#" onclick="javascript:util.nav.to('/blog/${id}')">View</a></p>
         </div>
     </script>
 
