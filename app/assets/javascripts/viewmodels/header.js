@@ -27,3 +27,11 @@ HeaderViewModel.prototype.configureSubscriptions = function() {
         }
     });
 };
+
+HeaderViewModel.prototype.signout = function() {
+    util.auth.signout()
+};
+
+HeaderViewModel.prototype.signin = function() {
+    util.auth.prompt();
+};

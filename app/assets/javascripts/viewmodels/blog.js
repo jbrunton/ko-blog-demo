@@ -26,10 +26,6 @@ var BlogViewModel = function(data) {
         this.loadFromData(data);
     }
         
-    $.subscribe("deletePost", function(post) {
-        self.deletePost(post);
-    });
-    
     $.subscribe("authorized", function(user) {
         self.checkIfAuthorized();
     });
@@ -59,7 +55,7 @@ BlogViewModel.prototype.deletePost = function(post) {
         
     var verb = post.id() ? "delete" : "discard",
         message = "Are you sure you want to " + verb + " this post?";    
-        
+    
     util.dialog.okCancel({
         title: "Delete post?",
         warning: true,

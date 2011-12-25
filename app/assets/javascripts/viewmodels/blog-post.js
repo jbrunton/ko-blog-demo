@@ -61,10 +61,6 @@ BlogPostViewModel.prototype.previewChanges = function() {
     $.publish("editing", [null]);
 };        
 
-BlogPostViewModel.prototype.deletePost = function() {
-    $.publish("deletePost", [this]);
-};
-    
 BlogPostViewModel.prototype.publishChanges = function() {
     this.editing(false);
     this.loading(true);
