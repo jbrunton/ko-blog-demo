@@ -105,6 +105,12 @@
         $(document).ready(function() {
             configureControllers();
             configureRoutes();
+            
+            $(document).on("click", "a.nav-to", function(event) {
+                var href = $(event.currentTarget).attr("href");
+                util.nav.to(href);
+                event.preventDefault();
+            });
         
             $("body").append(util.loadView('/views/header.htm'));
             ko.applyBindings(new HeaderViewModel(), $('#header')[0]);
@@ -154,7 +160,7 @@
         <div class="blog">
             <h3>${title}</h3>
             <span>by ${author}</span>
-            <p><a href="#" onclick="javascript:util.nav.to('/blog/${id}')">View</a></p>
+            <p><a class="nav-to" href="/blog/${id}">View</a></p>
         </div>
     </script>
 

@@ -219,13 +219,13 @@ var util = {
                                 options.ok();
                             }
                         }
-                        $(this).dialog("close");
+                        dlg.dialog("close");
                     },
                     Cancel: function() {
                         if (options.cancel) {
                             options.cancel();
                         }
-                        $(this).dialog("close");
+                        dlg.dialog("close");
                     }
                 }
             });            
@@ -379,6 +379,8 @@ var util = {
             _(routes).chain().each(_addRoute);
         },
         
+        history: {},
+        
         to: function(url) {
             var urlParts = url.split("/");
             
@@ -416,6 +418,7 @@ var util = {
                 .value();
             
             if (route) {
+                history.pushState(util.nav.history, url, url);
                 route.action(params);
             }
         }
