@@ -98,7 +98,7 @@
         function configureRoutes() {
             util.nav.map([
                 "/blog/:id   -> blog.index",
-                "/home/index -> home.index"
+                "/ -> home.index"
             ]);
         }
     
@@ -112,7 +112,7 @@
             $("body").append(util.loadView('/views/blog.htm'));
             $("body").append(util.loadView('/views/blog-post.htm'));
 
-            util.nav.to("/home/index");            
+            util.nav.to("/");            
         });
     </script>
 </head>

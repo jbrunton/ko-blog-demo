@@ -373,7 +373,7 @@ var util = {
                     routeParts: _routeParts(),
                     action: _compileAction(util.nav.actions, action.split("."))
                 };
-
+                
                 util.nav._routes.push(route);
             };
             _(routes).chain().each(_addRoute);
@@ -385,8 +385,12 @@ var util = {
             var params = {};
                 
             var _matchRoute = function(route) {
+                if (route.routeParts.length != urlParts.length) {
+                    return false;
+                }
+                
                 var xs = _.zip(route.routeParts, urlParts);
-
+                
                 var _matchRoutePart = function(x) {
                     if (x[1].match(x[0].regex)) {
                         if (x[0].id) {
