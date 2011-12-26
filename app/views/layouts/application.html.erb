@@ -113,10 +113,16 @@
     </script>
     
     <script type="text/x-jquery-tmpl" id="blogListItemView">
-        <div class="blog">
-            <h3>${title}</h3>
-            <span>by ${author}</span>
-            <p><a class="nav-to" href="/blog/${id}">View</a></p>
+        <div class="bubble">
+            <div class="bubble-content">
+                <div class="bubble-header">
+                    <h3>${title}</h3>
+                </div>
+                <div class="bubble-body">
+                    <span>by ${author}</span>
+                    <p><a class="nav-to" href="/blog/${id}">View</a></p>
+                </div>
+            </div>
         </div>
     </script>
 

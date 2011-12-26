@@ -34,7 +34,6 @@ var BlogPostViewModel = function(data) {
     this.configureSubscriptions();            
 };
 
-// TODO: implement as two mixins, crud.behavior and serialization.behavior
 // TODO: cache mixins!
 util.extend(
     BlogPostViewModel,

@@ -257,6 +257,7 @@ var util = {
         return number;
     },
     parseTimestamp: function(value) {
+        if (!value) return null;
         var regex = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z$/;
         var dateParts = value.match(regex);
         return new Date(dateParts[1], dateParts[2], dateParts[3], dateParts[4], dateParts[5], dateParts[6]);
@@ -363,7 +364,7 @@ var util = {
     
     effects : {
         afterAdd: function(element) {
-            $(element).hide().fadeIn();
+            $(element).hide().fadeIn('fast');
         },        
         beforeRemove: function(element) {
             $(element).find(".actions").hide();
@@ -565,10 +566,10 @@ var util = {
             ko.applyBindings(viewModel, newItem[0]); 
             
             if (currentItems.length) {
-                currentItems.animate({ left: '-=800px', opacity: 0 }, 800, function() {
+                currentItems.animate({ left: '-=800px', opacity: 0 }, 500, function() {
                     currentItems.remove();
                 });
-                newItem.css('opacity', '0').animate({ left: '-=800px', opacity: 1.0 }, 800, function() {
+                newItem.css('opacity', '0').animate({ left: '-=800px', opacity: 1.0 }, 500, function() {
                     newItem.css('left', '0');
                 });
             }

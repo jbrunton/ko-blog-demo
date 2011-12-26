@@ -1,28 +1,22 @@
 <script type="text/x-jquery-tmpl" id="blogPostView">
-    <div class="blog-post">
-        
-        <div class="title-bar clearfix">
+    <div class="bubble">
+        <div class="bubble-content">
+        <div class="bubble-header clearfix">
             <div class="title">
                 {{if editing}}
                     <input data-bind="value: title" />
                 {{else}}
                     <h3 data-bind="text: title" />
-                    <p>
-                        <span class="posted-date">Posted: ${createdAtFm}</span>
-                        {{if updatedAtFm}}
-                            <span class="modified-date">(last updated: ${updatedAtFm})</span>
-                        {{/if}}
-                    </p>
                 {{/if}}
             </div>
             
             {{if loading}}
                 <div class="actions">
-                    <p>Updating...</p>
+                    <p><img src="/assets/loading.gif" /> Waiting for server...</p>
                 </div>
             {{else}}
                 <div class="actions" data-bind="visible: $parent.authorized">
-                    <button data-bind="button: {}, click: startEditing, visible: canEdit">edit</button>
+                    <button data-bind="button: {}, click: startEditing, visible: canEdit && !editing()">edit</button>
                     <button data-bind="button: {}, click: previewChanges, visible: editing">preview changes</button>
                     <button data-bind="button: {}, click: function() { $parent.deletePost($data) }, visible: id">delete</button>
                     <button data-bind="button: {}, click: function() { $parent.deletePost($data) }, visible: !id()">cancel</button>
@@ -30,12 +24,23 @@
                 </div>
             {{/if}}
         </div>
+        <div class="bubble-body">
         
         {{if editing}}
             <textarea data-bind="value: content" />
         {{else}}
+            <p>
+                <span class="posted-date">Posted: ${createdAtFm}</span>
+                {{if updatedAtFm}}
+                    <span class="modified-date">(last updated: ${updatedAtFm})</span>
+                {{/if}}
+            </p>
+
             <div data-bind="html: content" />
         {{/if}}
         
+        </div>
+        
+    </div>
     </div>
 </script>
