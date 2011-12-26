@@ -32,7 +32,7 @@
         function configureControllers() {
             util.nav.actions.home = {
                 index: function(params) {
-                    var blogListData = util.loadFeed('/api/json/feed/blog');
+                    var blogListData = util.loadFeed('/api/json/feed/blog/all');
                     var blogListViewModel = new BlogListViewModel(blogListData);
                     util.nav.view('blogListView', blogListViewModel);
                 }

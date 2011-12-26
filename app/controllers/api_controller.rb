@@ -11,28 +11,11 @@ class ApiController < ApplicationController
     def feed
         model = getModel(params[:model])
         
-        if params[:id]
-            response = model.feed(params[:id])
-        elsif params[:blog_id]
-            response = model.where("blog_id = ?", params[:blog_id])
-        elsif params[:user_id]
-            response = model.where("user_id = ?", params[:user_id])
-        elsif params[:search_text]
+        if params[:search_text]
             pattern = "%#{params[:search_text]}%"
             response = model.search(pattern)
         else
-            response = model.all
-            
-            if (params[:model] == "blogs")
-                logger.info "generating feed for blogs"
-                
-                response = response.collect {|b| {
-                    :id => b.id,
-                    :title => b.title,
-                    :author => b.user.user_name
-                }}
-            end
-            
+            response = model.feed(params)
         end
         
         respond_to do |format|
