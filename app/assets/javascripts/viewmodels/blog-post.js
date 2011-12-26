@@ -28,16 +28,26 @@ var BlogPostViewModel = function(data) {
     });
     
     if (data) {
-        this.loadFromData(data);
+        this.fromData(data);
     }
 
     this.configureSubscriptions();            
 };
 
+// TODO: implement as two mixins, crud.behavior and serialization.behavior
 util.extend(
     BlogPostViewModel,
-    util.crud.behavior,
-    { entityName: util.crud.blogPost.entityName }
+    util.crud.behavior, {
+        entityName: util.crud.blogPost.entityName,
+        dataRules: [
+            ":id",
+            ":blogId <> :blog_id",
+            ":title",
+            ":content",
+            ":createdAt <- [parseTimestamp] :created_at",
+            ":updatedAt <- [parseTimestamp] :updated_at"
+        ]
+    }
 );
 
 BlogPostViewModel.prototype.configureSubscriptions = function() {
@@ -75,6 +85,9 @@ BlogPostViewModel.prototype.publishChanges = function() {
     var error = function() {
         alert("Error updating post");
     };
+
+    var data = this.toData();
+    alert(JSON.stringify(data));
     
     if (this.id()) {
         this.doUpdateReq(success, error);

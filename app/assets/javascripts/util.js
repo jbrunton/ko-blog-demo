@@ -38,6 +38,12 @@ var util = {
         mixin.call(target.prototype, options);
     },
     
+    str: {
+        removeWS: function(str) {
+            return str.replace(/\s/g, "");
+        }
+    },
+    
     crud : {
         actionUrl : function(action, entity, id) {
             return "/api/json/" + action + "/" + entity + (id ? "/" + id : "");
@@ -64,23 +70,23 @@ var util = {
                 $.ajax({
                     type: 'POST',
                     url: util.crud.actionUrl("create", util.crud.blogPost.entityName),
-                    data: this.serialize(),
+                    data: this.toData(),
                     success: success,
                     error: error,
                     dataType: 'json'
                 });
-            }
+            };
             
             this.doUpdateReq = function(success, error) {
                 $.ajax({
                     type: 'POST',
                     url: this.actionUrl("update"),
-                    data: { data: this.serialize() },
+                    data: { data: this.toData() },
                     success: success,
                     error: error,
                     dataType: 'json'
                 });
-            }
+            };
             
             this.doDeleteReq = function(success, error) {
                 $.ajax({
@@ -91,8 +97,132 @@ var util = {
                     error: error,
                     dataType: 'json'
                 });
-            }
+            };
             
+            this._compileRules = function() {
+                    this.dataRules = [];
+                    var self = this;
+                    
+                    function parseRule(rule) {
+                        var clean = util.str.removeWS(rule);
+                        var regex = /^(\[\w+\])?(:\w+)(<-|<>|->)?(\[\w+\])?(:\w+)?$/;
+                        
+                        var match = clean.match(regex);
+                        
+                        var _toIdent = function(token) {
+                            var _ident = token;
+                            if (token[0] === ":") {
+                                _ident = token.slice(1, token.length);
+                            };
+                            return _ident;
+                        };
+                        
+                        var _toFunc = function(ident) {
+                            var _rec = function(obj, idents) {
+                                if (idents.length === 0) {
+                                    return obj;
+                                } else {
+                                    return _rec(obj[idents[0]], idents.slice(1, idents.length));
+                                }
+                            }
+                            
+                            var idents = ident.slice(1, ident.length - 1).split(".");
+                            
+                            return _rec(util, idents);
+                        };
+
+                        var _parseMatch = function(match) {
+                        
+                            var AST = {
+                                objConv: match[1],
+                                objField: match[2],
+                                op: match[3],
+                                dataConv: match[4],
+                                dataField: match[5]
+                            };
+                            
+                            if (!AST.op) {
+                                AST.op = "<>";
+                                AST.dataField = AST.objField;
+                            }
+
+                            return AST;
+                        };
+                        
+                        var _compileAST = function(AST) {
+                            var objIdent = _toIdent(AST.objField);
+                            var dataIdent = _toIdent(AST.dataField);
+                            var rule = { name: AST.objField };
+                            
+                            if (_.include(["<>", "->"], AST.op)) {
+                                rule.toData = function(data) {
+                                    var conv = AST.objConv
+                                        ? _toFunc(AST.objConv)
+                                        : _.identity;
+                                    data[dataIdent] = conv(self[objIdent]());
+                                };
+                            }
+                            
+                            if (_.include(["<>", "<-"], AST.op)) {
+                                rule.fromData = function(data) {
+                                    var conv = AST.dataConv
+                                        ? _toFunc(AST.dataConv)
+                                        : _.identity;
+                                    self[objIdent](conv(data[dataIdent]));
+                                };
+                            };
+                            return rule;
+                        };
+                        
+                        if (match) {
+                            var AST = _parseMatch(match);
+                            var rule = _compileAST(AST);
+                            self.dataRules.push(rule);
+                        }
+                    }
+                    
+                    _(options.dataRules)
+                        .chain()
+                        .each(parseRule);
+            };
+            
+            this.toData = function() {
+                if (!this.dataRules) {
+                    this._compileRules();
+                }
+            
+                var _apply = function(rule, data) {
+                    if (rule.toData) {
+                        rule.toData(data);
+                    }
+                };
+            
+                var data = {};
+                _(this.dataRules)
+                    .chain()
+                    .each(function(rule) {
+                        _apply(rule, data);
+                    });
+                return data;
+            };
+            
+            this.fromData = function(data) {
+                if (!this.dataRules) {
+                    this._compileRules();
+                }
+            
+                var _apply = function(rule, data) {
+                    if (rule.fromData) {
+                        rule.fromData(data);
+                    }
+                };
+            
+                _(this.dataRules)
+                    .chain()
+                    .each(function(rule) {
+                        _apply(rule, data);
+                    });
+            };
             
             return this;
         },
@@ -160,7 +290,7 @@ var util = {
             return args[n];
         });
     },
-    
+        
     dialog : {
         okCancel : function(options) {
             var selector = options.selector
@@ -333,7 +463,7 @@ var util = {
         map: function(routes) {
             var _addRoute = function(map) {
                 // alert("_addRoute - map: " + map);
-                var matches = map.replace(/\s/, "").match(/(.*)->(.*)/);
+                var matches = map.trim().match(/(.*)->(.*)/);
                 
                 var url = matches[1].trim(),
                     action = matches[2].trim();
