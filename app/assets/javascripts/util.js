@@ -44,61 +44,8 @@ var util = {
         }
     },
     
-    crud : {
-        actionUrl : function(action, entity, id) {
-            return "/api/json/" + action + "/" + entity + (id ? "/" + id : "");
-        },
-        blogPost : {
-            entityName : "blog-posts",
-            actionUrl : function(action, id) {
-                return util.crud.actionUrl(action, util.crud.blogPost.entityName, id);
-            }
-        },
-        blog : {
-            entityName: "blogs",
-            actionUrl : function(action, id) {
-                return util.crud.actionUrl(action, util.crud.blog.entityName, id);
-            }
-        },
-        
-        behavior : function(options) {            
-            this.actionUrl = function(action) {
-                return util.crud.actionUrl(action, options.entityName, this.id());
-            };
-            
-            this.doCreateReq = function(success, error) {
-                $.ajax({
-                    type: 'POST',
-                    url: util.crud.actionUrl("create", util.crud.blogPost.entityName),
-                    data: this.toData(),
-                    success: success,
-                    error: error,
-                    dataType: 'json'
-                });
-            };
-            
-            this.doUpdateReq = function(success, error) {
-                $.ajax({
-                    type: 'POST',
-                    url: this.actionUrl("update"),
-                    data: { data: this.toData() },
-                    success: success,
-                    error: error,
-                    dataType: 'json'
-                });
-            };
-            
-            this.doDeleteReq = function(success, error) {
-                $.ajax({
-                    type: 'POST',
-                    url: this.actionUrl("delete"),
-                    data: { id: this.id() },
-                    success: success,
-                    error: error,
-                    dataType: 'json'
-                });
-            };
-            
+    serialization : {
+        behavior: function(options) {
             this._compileRules = function() {
                     this.dataRules = [];
                     var self = this;
@@ -218,7 +165,66 @@ var util = {
             };
             
             return this;
+        }
+    },
+    
+    crud : {
+        actionUrl : function(action, entity, id) {
+            return "/api/json/" + action + "/" + entity + (id ? "/" + id : "");
         },
+        blogPost : {
+            entityName : "blog-posts",
+            actionUrl : function(action, id) {
+                return util.crud.actionUrl(action, util.crud.blogPost.entityName, id);
+            }
+        },
+        blog : {
+            entityName: "blogs",
+            actionUrl : function(action, id) {
+                return util.crud.actionUrl(action, util.crud.blog.entityName, id);
+            }
+        },
+        
+        behavior : function(options) {            
+            this.actionUrl = function(action) {
+                return util.crud.actionUrl(action, options.entityName, this.id());
+            };
+            
+            this.doCreateReq = function(success, error) {
+                $.ajax({
+                    type: 'POST',
+                    url: util.crud.actionUrl("create", util.crud.blogPost.entityName),
+                    data: this.toData(),
+                    success: success,
+                    error: error,
+                    dataType: 'json'
+                });
+            };
+            
+            this.doUpdateReq = function(success, error) {
+                $.ajax({
+                    type: 'POST',
+                    url: this.actionUrl("update"),
+                    data: { data: this.toData() },
+                    success: success,
+                    error: error,
+                    dataType: 'json'
+                });
+            };
+            
+            this.doDeleteReq = function(success, error) {
+                $.ajax({
+                    type: 'POST',
+                    url: this.actionUrl("delete"),
+                    data: { id: this.id() },
+                    success: success,
+                    error: error,
+                    dataType: 'json'
+                });
+            };
+                        
+            return this;
+        }
         
     },
     

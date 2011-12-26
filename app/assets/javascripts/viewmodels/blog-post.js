@@ -35,10 +35,16 @@ var BlogPostViewModel = function(data) {
 };
 
 // TODO: implement as two mixins, crud.behavior and serialization.behavior
+// TODO: cache mixins!
 util.extend(
     BlogPostViewModel,
-    util.crud.behavior, {
-        entityName: util.crud.blogPost.entityName,
+    util.crud.behavior,
+    { entityName: util.crud.blogPost.entityName }
+);
+
+util.extend(
+    BlogPostViewModel,
+    util.serialization.behavior, {
         dataRules: [
             ":id",
             ":blogId <> :blog_id",
@@ -78,7 +84,7 @@ BlogPostViewModel.prototype.publishChanges = function() {
     var self = this;
     
     var success = function(data) {
-        self.loadFromData(data);
+        self.fromData(data);
         self.loading(false);
     };
     
@@ -86,9 +92,6 @@ BlogPostViewModel.prototype.publishChanges = function() {
         alert("Error updating post");
     };
 
-    var data = this.toData();
-    alert(JSON.stringify(data));
-    
     if (this.id()) {
         this.doUpdateReq(success, error);
     } else {
@@ -96,28 +99,4 @@ BlogPostViewModel.prototype.publishChanges = function() {
     }
         
     this.changed(false);
-};
-    
-BlogPostViewModel.prototype.serialize = function() {
-    return {
-        id: this.id(),
-        blog_id: this.blogId(),
-        title: this.title(),
-        content: this.content()
-    };
-}
-
-BlogPostViewModel.prototype.loadFromData = function(data) {
-    this.id(data.id);
-    this.blogId(data.blog_id);
-    this.title(data.title);
-    this.content(data.content);
-
-    if (data.created_at) {
-        this.createdAt(util.parseTimestamp(data.created_at));
-    }
-    
-    if (data.updated_at) {
-        this.updatedAt(util.parseTimestamp(data.updated_at));
-    }
 };
