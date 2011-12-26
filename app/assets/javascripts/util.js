@@ -70,7 +70,7 @@ var util = {
                                 if (funcDescriptor[0] === "?") {
                                     var funcName = funcDescriptor.slice(1, funcDescriptor.length);
                                     var funcRef = eval(funcName);
-                                    var func = function(x) { if (x) funcRef(x); };
+                                    var func = function(x) { if (x) { return funcRef(x); } };
                                 } else {
                                     var func = eval(funcDescriptor);
                                 }
