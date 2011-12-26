@@ -52,7 +52,7 @@ var util = {
                     
                     function parseRule(rule) {
                         var clean = util.str.removeWS(rule);
-                        var regex = /^(\[[\w\.]+\])?(:\w+)(<-|<>|->)?(\[[\w\.]+\])?(:\w+)?$/;
+                        var regex = /^(\[[\?\w\.]+\])?(:\w+)(<-|<>|->)?(\[[\?\w\.]+\])?(:\w+)?$/;
                         
                         var match = clean.match(regex);
                         
@@ -65,8 +65,15 @@ var util = {
                         };
                         
                         var _toFunc = function(ident) {
-                            if (ident.match(/^\[([\w\.])+\]$/)) {
-                                var expr = ident.slice(1, ident.length - 1);
+                            if (ident.match(/^\[([\?\w\.])+\]$/)) {
+                                var funcDescriptor = ident.slice(1, ident.length - 1);
+                                if (funcDescriptor[0] === "?") {
+                                    var expr = "function(x) { if (x) return "
+                                        + funcDescriptor.slice(1, funcDescriptor.length)
+                                        + "(x); }";
+                                } else {
+                                    var expr = funcDescriptor;
+                                }
                                 return eval(expr);
                             }
                         };
@@ -257,7 +264,6 @@ var util = {
         return number;
     },
     parseTimestamp: function(value) {
-        if (!value) return null;
         var regex = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z$/;
         var dateParts = value.match(regex);
         return new Date(dateParts[1], dateParts[2], dateParts[3], dateParts[4], dateParts[5], dateParts[6]);

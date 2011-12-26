@@ -49,8 +49,8 @@ util.extend(
             ":blogId <> :blog_id",
             ":title",
             ":content",
-            ":createdAt <- [util.parseTimestamp] :created_at",
-            ":updatedAt <- [util.parseTimestamp] :updated_at"
+            ":createdAt <- [?util.parseTimestamp] :created_at",
+            ":updatedAt <- [?util.parseTimestamp] :updated_at"
         ]
     }
 );
