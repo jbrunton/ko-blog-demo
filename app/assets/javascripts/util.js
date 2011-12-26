@@ -418,7 +418,7 @@ var util = {
         },
         
         signout: function() {
-            $.cookie('auth_token', null);
+            $.cookie('auth_token', null, { path: '/' });
             $.publish('authorized');
         },
         
