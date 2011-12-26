@@ -105,7 +105,7 @@ var util = {
                     
                     function parseRule(rule) {
                         var clean = util.str.removeWS(rule);
-                        var regex = /^(\[\w+\])?(:\w+)(<-|<>|->)?(\[\w+\])?(:\w+)?$/;
+                        var regex = /^(\[[\w\.]+\])?(:\w+)(<-|<>|->)?(\[[\w\.]+\])?(:\w+)?$/;
                         
                         var match = clean.match(regex);
                         
@@ -118,17 +118,10 @@ var util = {
                         };
                         
                         var _toFunc = function(ident) {
-                            var _rec = function(obj, idents) {
-                                if (idents.length === 0) {
-                                    return obj;
-                                } else {
-                                    return _rec(obj[idents[0]], idents.slice(1, idents.length));
-                                }
+                            if (ident.match(/^\[([\w\.])+\]$/)) {
+                                var expr = ident.slice(1, ident.length - 1);
+                                return eval(expr);
                             }
-                            
-                            var idents = ident.slice(1, ident.length - 1).split(".");
-                            
-                            return _rec(util, idents);
                         };
 
                         var _parseMatch = function(match) {
