@@ -2,9 +2,9 @@ class ApiController < ApplicationController
 
     def getModel(name)
         {
-            "users" => User,
-            "blogs" => Blog,
-            "blog-posts" => BlogPost
+            "user" => User,
+            "blog" => Blog,
+            "blog-post" => BlogPost
         }[name]
     end
     

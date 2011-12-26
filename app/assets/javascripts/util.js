@@ -173,13 +173,13 @@ var util = {
             return "/api/json/" + action + "/" + entity + (id ? "/" + id : "");
         },
         blogPost : {
-            entityName : "blog-posts",
+            entityName : "blog-post",
             actionUrl : function(action, id) {
                 return util.crud.actionUrl(action, util.crud.blogPost.entityName, id);
             }
         },
         blog : {
-            entityName: "blogs",
+            entityName: "blog",
             actionUrl : function(action, id) {
                 return util.crud.actionUrl(action, util.crud.blog.entityName, id);
             }
