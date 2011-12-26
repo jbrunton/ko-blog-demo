@@ -4,10 +4,7 @@ VtbServer::Application.routes.draw do
 
   # Sample of regular route:
   #   match 'api/:format/:action/(:id)' => 'api'
-    match 'api/:format/feed/:model/(:id)' => 'api#feed'
-    match 'api/:format/create/:model' => 'api#create'
-    match 'api/:format/update/:model/:id' => 'api#update'
-    match 'api/:format/delete/:model/:id' => 'api#delete'
+    match ':controller/:format/:action/:model/(:id)'
     
     match 'auth/token' => 'auth#token'
   # Keep in mind you can assign values other than :controller and :action
