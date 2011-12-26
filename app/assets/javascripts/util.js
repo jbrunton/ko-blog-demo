@@ -68,13 +68,13 @@ var util = {
                             if (ident.match(/^\[([\?\w\.])+\]$/)) {
                                 var funcDescriptor = ident.slice(1, ident.length - 1);
                                 if (funcDescriptor[0] === "?") {
-                                    var expr = "function(x) { if (x) return "
-                                        + funcDescriptor.slice(1, funcDescriptor.length)
-                                        + "(x); }";
+                                    var funcName = funcDescriptor.slice(1, funcDescriptor.length);
+                                    var funcRef = eval(funcName);
+                                    var func = function(x) { if (x) funcRef(x); };
                                 } else {
-                                    var expr = funcDescriptor;
+                                    var func = eval(funcDescriptor);
                                 }
-                                return eval(expr);
+                                return func;
                             }
                         };
 
@@ -468,13 +468,10 @@ var util = {
         
         map: function(routes) {
             var _addRoute = function(map) {
-                // alert("_addRoute - map: " + map);
                 var matches = map.trim().match(/(.*)->(.*)/);
                 
                 var url = matches[1].trim(),
                     action = matches[2].trim();
-                    
-                // alert("url: " + url + ", action: " + action);
                     
                 var _compilePart = function(part) {
                     if (part[0] === ":") {

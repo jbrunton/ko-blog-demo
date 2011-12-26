@@ -26,7 +26,7 @@ var BlogPostViewModel = function(data) {
             }
         }
     });
-    
+
     if (data) {
         this.fromData(data);
     }
